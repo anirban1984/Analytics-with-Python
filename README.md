@@ -23,14 +23,3 @@ B = np.array([[ 0,  1,  2,  3],
               
 How do we normally do this in NumPy? The first thing to notice is that we need to reshape A so that we can broadcast it with B (specifically A needs to be column vector). Then we can multiply 0 with the first row of B, multiply 1 with the second row, and 2 with the third row. This will give us a new array and the three rows can then be summed.
 
-Putting this together, we have:
-
->>> (A[:, np.newaxis] * B).sum(axis=1)
-array([ 0, 22, 76])
-This works fine, but using einsum we can do better:
-
->>> np.einsum('i,ij->i', A, B)
-array([ 0, 22, 76])
-Why better? In short because we didn’t need to reshape A at all and, most importantly, the multiplication didn’t create a temporary array like A[:, np.newaxis] * B did. Instead, einsum simply summed the products along the rows as it went. Even for this tiny example, I timed einsum to be about three times faster.
-
-
